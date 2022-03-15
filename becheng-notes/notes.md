@@ -17,4 +17,4 @@ As a workaround, do the following:
 7.  Use Postman as usual against the [fhir-proxy postman environment](https://github.com/microsoft/health-architectures/tree/main/Postman#step-3---import-environment-and-collection-files-into-postman) to verify.
 
 Note:
-With this setup, to call the fhir-api directly (not through the proxy) requires another service principal (SP) to be set up on the same tenant where the fhir-api resides and not on the secondary tenant.  This SP will need only a single API Permission, _Azure Healthcare APIs - user_impersonation_ which does not require admin consent along with being assigned the _FHIR Data Contributor_ RBAC role to the fhir-api.  
+With this setup, to call the fhir-api directly (not through the proxy) requires another SPN to be set up on the same tenant where the fhir-api resides and not on the secondary tenant.  This SPN will need only a single API Permission, _Azure Healthcare APIs - user_impersonation_ which does not require admin consent along with being assigned the _FHIR Data Contributor_ RBAC role to the fhir-api.  
