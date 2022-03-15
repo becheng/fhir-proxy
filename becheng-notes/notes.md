@@ -13,7 +13,7 @@ As a workaround, do the following:
 6.  Modified the fhir-proxy "Configuration" aka _app settings_ to ensure the authenication between the proxy and the api is using its MSI.  Make sure _FS-RESOURCE_ is using the correct fhir reource, e.g. `https://<fhir-api-url>..azurehealthcareapis.com` and the _FS-CLIENT-ID_, _FS-SECRET_ and _FS-TENANT-NAME_ are empty - **this combination will force the fhir-proxy to use its MSI to authenicate with the fhir-api**.
 
     <img src="./images/fhir-proxy-image1.jpg" width=450> 
-6.  Create a service/postman service principal in the secondary tenant and [provide it access to the proxy App Roles and API Permissions](https://github.com/microsoft/fhir-starter/tree/main/quickstarts#step-3---configure-app-roles-and-api-permissions) as usual.
+6.  [Create a service/postman client SPN in the secondary tenant](https://github.com/microsoft/health-architectures/tree/main/Postman#step-1---create-an-app-registration-for-postman-in-aad).
 7.  Use Postman as usual against the [fhir-proxy postman environment](https://github.com/microsoft/health-architectures/tree/main/Postman#step-3---import-environment-and-collection-files-into-postman) to verify.
 
 Note:
