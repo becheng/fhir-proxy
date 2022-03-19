@@ -62,7 +62,8 @@ Sample format of Consent json:
         -  Client Secret: `<postman/service clientSecret>`
         -  Scope: `api://<proxy clientid/ app uri>`
     
-    <img src="./images/fhir-proxy-image3.jpg" width=450> 
+
+        <img src="./images/fhir-proxy-image3.jpg" width=450> 
 7.  Confirm that access to that patient was denied due to the consent opt out.
 
     <img src="./images/fhir-proxy-image5.jpg" width=450> 
