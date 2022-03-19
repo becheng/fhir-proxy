@@ -18,3 +18,18 @@ As a workaround, do the following:
 
 Note:
 With this setup, to call the fhir-api directly (not through the proxy) requires another SPN to be set up on the same tenant where the fhir-api resides and not on the secondary tenant.  This SPN will need only a single API Permission, _Azure Healthcare APIs - user_impersonation_ which does not require admin consent along with being assigned the _FHIR Data Contributor_ RBAC role to the fhir-api.  
+
+## Setting Consent in the Proxy
+This sections details my learnings setting up the Consent processor in the proxy.
+1.  The Administrator proxy role is required to link a fhir entity to the AAD account, like a _Practitioner_.
+
+### Setting up a user-based login in Postman
+1. Goto a postman request's Authorization tab.
+2. Set the following values:
+    -  Grant Type: `Authorization Code`
+    -  Callback URL: `https://www.getpostman.com/oauth2/callback`
+    -  Auth URL: `https://login.microsoftonline.com/<tenant-id>/v2.0/authorize`
+    -  Access Token URL: `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`
+    -  Client Id: `<postman/service clientid>`
+    -  Client Secret: `<postman/service clientSecret>`
+    -  Scope: `api://<proxy clientid/ app uri>`
