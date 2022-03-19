@@ -23,7 +23,7 @@ With this setup, to call the fhir-api directly (not through the proxy) requires 
 This sections details my learnings setting up the Consent processor in the proxy.
 
 Overall Steps with my notes:
-1.  Update a patient's consent by issuing a POST to the `<fhir-proxy-url>/Consent` endpoint using a SPN or a User Acccount assigned with proxy's _Administrator_ role.
+1.  Update a patient's consent by issuing a POST to the `<fhir-proxy-url>/Consent` endpoint using a SPN or a User Acccount assigned with proxy's _Writer_ role.
 Sample format of Consent json:
     ```
     "patient": {
@@ -43,16 +43,26 @@ Sample format of Consent json:
 
 2.  Enable the ConsentOptOut module in the proxy function by updating its **FP-POST-PROCESSOR-TYPES** to `FHIRProxy.postprocessors.ConsentOptOutFilter` under its _Configuration_ blade.
 3.  Add a new Configuration setting of **FP-MOD-CONSENT-OPTOUT-CATEGORY** with a value of `http://loinc.org|59284-0`.
-4.  Create a new user account in Azure AD that will represent the Practitioner entity in the fhir repo, and assign the user account to the proxy's **Reader** and **Practitioner** roles under _Enterperise Applications_ for the proxy.  Make note of the AAD account **object id**.  Note:  One of the three RBAC roles of Administrator, Reader and Writer must be assigned to a user or SPN in order to access the fhir repo.  The Practitioner, Patient, etc. roles are used to mirror the roles in the fhir repo is used to drive the consent logic, e.g. a Practitioner may only view patient records where they have granted consent.
-5.  Link the AAD account to the FHIR Resource using a proxy Administrator role; format `https://<proxyname>.azurewebsites.net/manage/link/Practitioner/<practitionerId>/<AAD account objectid>`
+4.  Create a new user account in Azure AD that will represent the Practitioner entity in the fhir repo, and assign the user account to the proxy's **Reader** and **Practitioner** roles under _Enterperise Applications_ for the proxy - **Important**, both must be assigned.  Make note of the AAD account **object id**.   
 
-### Setting up a user-based login in Postman
-1. Goto a postman request's Authorization tab.
-2. Set the following values:
-    -  Grant Type: `Authorization Code`
-    -  Callback URL: `https://www.getpostman.com/oauth2/callback`
-    -  Auth URL: `https://login.microsoftonline.com/<tenant-id>/v2.0/authorize`
-    -  Access Token URL: `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`
-    -  Client Id: `<postman/service clientid>`
-    -  Client Secret: `<postman/service clientSecret>`
-    -  Scope: `api://<proxy clientid/ app uri>`
+    Notes:  
+    -  One of the three RBAC roles of _Administrator_, _Reader_ and _Writer_ must be assigned to a user or SPN in order to access the fhir repo.  
+    -  The Practitioner, Patient, etc. roles are used to mirror the roles in the fhir repo is used to drive the consent logic, e.g. a Practitioner may only view patient records where they have granted consent.
+7.  Link the AAD account to the FHIR Resource using a proxy _Administrator_ role; format: `https://<proxyname>.azurewebsites.net/manage/link/Practitioner/<practitionerId>/<AAD account objectid>`
+
+    <img src="./images/fhir-proxy-image4.jpg" width=450> 
+6.  Login into postman with the Practitioner AAD user account that was just linked and issue a GET command on the patient that you just configured the consent for.
+    -  Goto a postman request's Authorization tab.
+    -  Set the following values:
+        -  Grant Type: `Authorization Code`
+        -  Callback URL: `https://www.getpostman.com/oauth2/callback`
+        -  Auth URL: `https://login.microsoftonline.com/<tenant-id>/v2.0/authorize`
+        -  Access Token URL: `https://login.microsoftonline.com/<tenant-id>/oauth2/v2.0/token`
+        -  Client Id: `<postman/service clientid>`
+        -  Client Secret: `<postman/service clientSecret>`
+        -  Scope: `api://<proxy clientid/ app uri>`
+    
+    <img src="./images/fhir-proxy-image3.jpg" width=450> 
+7.  Confirm that access to that patient was denied due to the consent opt out.
+
+    <img src="./images/fhir-proxy-image5.jpg" width=450> 
