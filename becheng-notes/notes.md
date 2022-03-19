@@ -19,9 +19,32 @@ As a workaround, do the following:
 Note:
 With this setup, to call the fhir-api directly (not through the proxy) requires another SPN to be set up on the same tenant where the fhir-api resides and not on the secondary tenant.  This SPN will need only a single API Permission, _Azure Healthcare APIs - user_impersonation_ which does not require admin consent along with being assigned the _FHIR Data Contributor_ RBAC role to the fhir-api.  
 
-## Setting Consent in the Proxy
+## Configuring Patient Consent
 This sections details my learnings setting up the Consent processor in the proxy.
-1.  The Administrator proxy role is required to link a fhir entity to the AAD account, like a _Practitioner_.
+
+Overall Steps with my notes:
+1.  Update a patient's consent by issuing a POST to the `<fhir-proxy-url>/Consent` endpoint using a SPN or a User Acccount assigned with proxy's _Administrator_ role.
+Sample format of Consent json:
+    ```
+    "patient": {
+        "reference": "Patient/<patient id in the fhir repo>"
+        },
+        "dateTime": "2020-05-18",
+        "organization": [
+            {
+            "reference": "Organization/<org id in the fhir repo>"
+            }
+        ],
+        "sourceAttachment": {
+            "title": "Withhold records for time frame"
+        },
+        ...
+    ```
+
+2.  Enable the ConsentOptOut module in the proxy function by updating its **FP-POST-PROCESSOR-TYPES** to `FHIRProxy.postprocessors.ConsentOptOutFilter` under its _Configuration_ blade.
+3.  Add a new Configuration setting of **FP-MOD-CONSENT-OPTOUT-CATEGORY** with a value of `http://loinc.org|59284-0`.
+4.  Create a new user account in Azure AD that will represent the Practitioner entity in the fhir repo, and assign the user account to the proxy's **Reader** and **Practitioner** roles under _Enterperise Applications_ for the proxy.  Make note of the AAD account **object id**.  Note:  One of the three RBAC roles of Administrator, Reader and Writer must be assigned to a user or SPN in order to access the fhir repo.  The Practitioner, Patient, etc. roles are used to mirror the roles in the fhir repo is used to drive the consent logic, e.g. a Practitioner may only view patient records where they have granted consent.
+5.  Link the AAD account to the FHIR Resource using a proxy Administrator role; format `https://<proxyname>.azurewebsites.net/manage/link/Practitioner/<practitionerId>/<AAD account objectid>`
 
 ### Setting up a user-based login in Postman
 1. Goto a postman request's Authorization tab.
